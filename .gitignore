@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# PHP
+composer.lock
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
