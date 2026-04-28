@@ -1,0 +1,175 @@
+version: '3.9'
+
+networks:
+  internal:
+    driver: bridge
+
+# ─────────────────────────────────────────────
+#  SERVICES
+# ─────────────────────────────────────────────
+services:
+
+  # ── API Gateway ──────────────────────────────
+  api-gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - EMPLOYEE_SERVICE_URL=http://employee-service:8080
+      - ATTENDANCE_SERVICE_URL=http://attendance-service:3003
+    depends_on:
+      - auth-service
+      - employee-service
+      - attendance-service
+    networks:
+      - internal
+
+  # ── Auth Service (Node.js) ────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=db-auth
+      - DB_PORT=3306
+      - DB_DATABASE=${AUTH_DB_NAME:-auth_db}
+      - DB_USERNAME=${AUTH_DB_USER:-auth_user}
+      - DB_PASSWORD=${AUTH_DB_PASSWORD:-auth_secret}
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+    depends_on:
+      db-auth:
+        condition: service_healthy
+    networks:
+      - internal
+
+  # ── Employee Service (PHP Laravel) ────────────
+  employee-service:
+    build:
+      context: ./services/employee-service
+      dockerfile: Dockerfile
+    container_name: employee-service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=local
+      - APP_KEY=${EMPLOYEE_APP_KEY:-base64:changeme==}
+      - DB_CONNECTION=mysql
+      - DB_HOST=db-employee
+      - DB_PORT=3306
+      - DB_DATABASE=${EMPLOYEE_DB_NAME:-employee_db}
+      - DB_USERNAME=${EMPLOYEE_DB_USER:-employee_user}
+      - DB_PASSWORD=${EMPLOYEE_DB_PASSWORD:-employee_secret}
+    depends_on:
+      db-employee:
+        condition: service_healthy
+    networks:
+      - internal
+
+  # ── Attendance Service (Node.js) ──────────────
+  attendance-service:
+    build:
+      context: ./services/attendance-service
+      dockerfile: Dockerfile
+    container_name: attendance-service
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_HOST=db-attendance
+      - DB_PORT=3306
+      - DB_DATABASE=${ATTENDANCE_DB_NAME:-attendance_db}
+      - DB_USERNAME=${ATTENDANCE_DB_USER:-attendance_user}
+      - DB_PASSWORD=${ATTENDANCE_DB_PASSWORD:-attendance_secret}
+    depends_on:
+      db-attendance:
+        condition: service_healthy
+    networks:
+      - internal
+
+# ─────────────────────────────────────────────
+#  DATABASES
+# ─────────────────────────────────────────────
+
+  # ── MySQL – Auth ──────────────────────────────
+  db-auth:
+    image: mysql:8.0
+    container_name: db-auth
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${AUTH_DB_NAME:-auth_db}
+      - MYSQL_USER=${AUTH_DB_USER:-auth_user}
+      - MYSQL_PASSWORD=${AUTH_DB_PASSWORD:-auth_secret}
+      - MYSQL_ROOT_PASSWORD=${AUTH_DB_ROOT_PASSWORD:-root_secret}
+    volumes:
+      - db_auth_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # ── MySQL – Employee ──────────────────────────
+  db-employee:
+    image: mysql:8.0
+    container_name: db-employee
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${EMPLOYEE_DB_NAME:-employee_db}
+      - MYSQL_USER=${EMPLOYEE_DB_USER:-employee_user}
+      - MYSQL_PASSWORD=${EMPLOYEE_DB_PASSWORD:-employee_secret}
+      - MYSQL_ROOT_PASSWORD=${EMPLOYEE_DB_ROOT_PASSWORD:-root_secret}
+    volumes:
+      - db_employee_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # ── MySQL – Attendance ────────────────────────
+  db-attendance:
+    image: mysql:8.0
+    container_name: db-attendance
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${ATTENDANCE_DB_NAME:-attendance_db}
+      - MYSQL_USER=${ATTENDANCE_DB_USER:-attendance_user}
+      - MYSQL_PASSWORD=${ATTENDANCE_DB_PASSWORD:-attendance_secret}
+      - MYSQL_ROOT_PASSWORD=${ATTENDANCE_DB_ROOT_PASSWORD:-root_secret}
+    volumes:
+      - db_attendance_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+# ─────────────────────────────────────────────
+#  VOLUMES
+# ─────────────────────────────────────────────
+volumes:
+  db_auth_data:
+  db_employee_data:
+  db_attendance_data:
