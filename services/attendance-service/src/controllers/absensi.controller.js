@@ -23,10 +23,11 @@ function nowWIB() {
  */
 function hitungStatusMasuk(waktuMasuk, jamMasuk, toleransiMenit) {
   const [h, m] = jamMasuk.split(':').map(Number);
-  const batas  = waktuMasuk.clone().hour(h).minute(m + toleransiMenit).second(0);
+  const jadwal = waktuMasuk.clone().hour(h).minute(m).second(0);
+  const batas  = jadwal.clone().add(toleransiMenit, 'minute');
 
   if (waktuMasuk.isAfter(batas)) {
-    const terlambatMenit = waktuMasuk.diff(batas.clone().minute(m), 'minute');
+    const terlambatMenit = waktuMasuk.diff(jadwal, 'minute');
     return { status: 'telat', terlambatMenit };
   }
   return { status: 'hadir', terlambatMenit: 0 };

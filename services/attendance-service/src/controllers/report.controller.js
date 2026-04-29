@@ -1,6 +1,8 @@
 'use strict';
 
 const dayjs = require('dayjs');
+require('dayjs/locale/id');
+dayjs.locale('id');
 const {
   Document, Packer, Paragraph, Table, TableRow, TableCell,
   TextRun, AlignmentType, WidthType, HeadingLevel,

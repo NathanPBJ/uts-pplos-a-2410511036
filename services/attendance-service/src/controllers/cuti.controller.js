@@ -112,7 +112,7 @@ async function setujui(req, res) {
     });
   }
 
-  const namaAdmin = req.user.nama || req.user.email || `Admin ID ${req.user.sub}`;
+  const namaAdmin = req.user.name || req.user.email || `Admin ID ${req.user.sub}`;
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
@@ -148,7 +148,7 @@ async function tolak(req, res) {
     });
   }
 
-  const namaAdmin = req.user.nama || req.user.email || `Admin ID ${req.user.sub}`;
+  const namaAdmin = req.user.name || req.user.email || `Admin ID ${req.user.sub}`;
   await pool.query(
     `UPDATE leave_requests SET status = 'ditolak', diproses_oleh = ?, catatan_admin = ? WHERE id = ?`,
     [namaAdmin, req.body.catatan_admin || null, id],
