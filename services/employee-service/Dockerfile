@@ -31,7 +31,7 @@ WORKDIR /app
 
 # Copy manifest dulu — layer ini hanya berubah jika composer.json/lock berubah
 COPY composer.json composer.lock* ./
-RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction --no-audit
 
 # Copy seluruh source aplikasi
 COPY . .
