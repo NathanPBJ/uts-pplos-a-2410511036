@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const ISSUER        = process.env.JWT_ISSUER   || 'yayasan-satwa-lestari';
-const AUDIENCE      = process.env.JWT_AUDIENCE || 'ysl-services';
+const AUDIENCE      = process.env.JWT_AUDIENCE || 'ys-lestari-clients';
 
 /**
  * Verifikasi access token yang dikirim oleh client melalui API Gateway.

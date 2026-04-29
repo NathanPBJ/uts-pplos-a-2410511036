@@ -108,6 +108,11 @@ services:
       - DB_DATABASE=${ATTENDANCE_DB_NAME:-attendance_db}
       - DB_USERNAME=${ATTENDANCE_DB_USER:-attendance_user}
       - DB_PASSWORD=${ATTENDANCE_DB_PASSWORD:-attendance_secret}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-changeme_access_secret_min32chars}
+      - JWT_ISSUER=${JWT_ISSUER:-yayasan-satwa-lestari}
+      - JWT_AUDIENCE=${JWT_AUDIENCE:-ys-lestari-clients}
+      - EMPLOYEE_SERVICE_URL=http://employee-service:8080
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:-changeme_internal_secret}
     depends_on:
       db-attendance:
         condition: service_healthy
