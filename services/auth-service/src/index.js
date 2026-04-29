@@ -9,7 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const oauthRoutes = require('./routes/oauth.routes');
 
 // Import passport config
-require('./config/passport');
+require('./utils/passport');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
