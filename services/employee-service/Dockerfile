@@ -1,22 +1,28 @@
 FROM php:8.3-cli-alpine
 
-# Install dependensi sistem
+# Install dependensi sistem + dev headers untuk ekstensi PHP
 RUN apk add --no-cache \
     curl \
+    curl-dev \
     git \
-    unzip \
     libpng-dev \
     libxml2-dev \
-    oniguruma-dev
+    libzip-dev \
+    oniguruma-dev \
+    openssl-dev \
+    unzip \
+    zip
 
 # Install ekstensi PHP yang dibutuhkan Laravel + MySQL
 RUN docker-php-ext-install \
+    bcmath \
+    curl \
+    mbstring \
+    opcache \
     pdo \
     pdo_mysql \
-    mbstring \
     xml \
-    bcmath \
-    opcache
+    zip
 
 # Ambil Composer dari image resminya
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
