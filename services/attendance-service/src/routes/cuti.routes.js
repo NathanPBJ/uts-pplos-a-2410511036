@@ -11,15 +11,15 @@ function validate(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
-      status: 'error',
-      pesan:  'Data yang dikirim tidak valid.',
+      status:    'error',
+      pesan:     'Data yang dikirim tidak valid.',
       kesalahan: errors.array().map((e) => ({ kolom: e.path, pesan: e.msg })),
     });
   }
   return next();
 }
 
-// ─── Ajukan Cuti ─────────────────────────────────────────────────────────────
+// ─── POST /api/cuti ───────────────────────────────────────────────────────────
 
 router.post(
   '/',
@@ -36,13 +36,13 @@ router.post(
       .isDate({ format: 'YYYY-MM-DD' }).withMessage('Format tanggal_selesai harus YYYY-MM-DD.'),
     body('alasan')
       .notEmpty().withMessage('Alasan cuti wajib diisi.')
-      .isLength({ min: 10, max: 500 }).withMessage('Alasan cuti minimal 10 karakter, maksimal 500 karakter.'),
+      .isLength({ min: 10, max: 500 }).withMessage('Alasan minimal 10 karakter, maksimal 500 karakter.'),
   ],
   validate,
-  ctrl.ajukanCuti,
+  ctrl.ajukan,
 );
 
-// ─── Daftar Cuti ─────────────────────────────────────────────────────────────
+// ─── GET /api/cuti ────────────────────────────────────────────────────────────
 
 router.get(
   '/',
@@ -50,42 +50,61 @@ router.get(
   [
     query('status')
       .optional()
-      .isIn(['pending', 'disetujui', 'ditolak'])
-      .withMessage("Status harus 'pending', 'disetujui', atau 'ditolak'."),
+      .isIn(['pending', 'disetujui', 'ditolak']).withMessage("Status harus 'pending', 'disetujui', atau 'ditolak'."),
     query('halaman').optional().isInt({ min: 1 }).withMessage('Halaman harus angka positif.'),
     query('per_halaman').optional().isInt({ min: 1, max: 100 }).withMessage('Per halaman harus antara 1 dan 100.'),
   ],
   validate,
-  ctrl.daftarCuti,
+  ctrl.daftar,
 );
 
-// ─── Detail Cuti ─────────────────────────────────────────────────────────────
+// ─── GET /api/cuti/:id ────────────────────────────────────────────────────────
 
 router.get(
   '/:id',
   authenticate,
-  [
-    param('id').isUUID().withMessage('ID cuti harus berupa UUID yang valid.'),
-  ],
+  [param('id').isUUID().withMessage('ID cuti harus berupa UUID yang valid.')],
   validate,
-  ctrl.detailCuti,
+  ctrl.detail,
 );
 
-// ─── Proses Cuti (Admin) ──────────────────────────────────────────────────────
+// ─── PATCH /api/cuti/:id/setujui — Admin ─────────────────────────────────────
 
 router.patch(
-  '/:id/proses',
+  '/:id/setujui',
   authenticate,
   authorize('admin'),
   [
     param('id').isUUID().withMessage('ID cuti harus berupa UUID yang valid.'),
-    body('status')
-      .notEmpty().withMessage('Status wajib diisi.')
-      .isIn(['disetujui', 'ditolak']).withMessage("Status harus 'disetujui' atau 'ditolak'."),
     body('catatan_admin').optional().isString().isLength({ max: 500 }),
   ],
   validate,
-  ctrl.prosesCuti,
+  ctrl.setujui,
+);
+
+// ─── PATCH /api/cuti/:id/tolak — Admin ───────────────────────────────────────
+
+router.patch(
+  '/:id/tolak',
+  authenticate,
+  authorize('admin'),
+  [
+    param('id').isUUID().withMessage('ID cuti harus berupa UUID yang valid.'),
+    body('catatan_admin')
+      .optional().isString().isLength({ max: 500 }),
+  ],
+  validate,
+  ctrl.tolak,
+);
+
+// ─── DELETE /api/cuti/:id — Batalkan oleh pegawai ────────────────────────────
+
+router.delete(
+  '/:id',
+  authenticate,
+  [param('id').isUUID().withMessage('ID cuti harus berupa UUID yang valid.')],
+  validate,
+  ctrl.batalkan,
 );
 
 module.exports = router;
