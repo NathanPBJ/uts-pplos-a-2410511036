@@ -1,6 +1,6 @@
 # Sistem Kepegawaian & Absensi — Yayasan Satwa Lestari
 
-> Tugas UTS — Mata Kuliah Pemrograman Platform Lanjut dan Orkestrasi Sistem (PPLOS)  
+> Tugas UTS —> Tugas UTS — Mata Kuliah Pembangunan Perangkat Lunak Berorientasi Service (PPLOS)
 > Program Studi Informatika, UPN Veteran Jakarta
 
 ---
@@ -81,6 +81,14 @@ Isi nilai-nilai di `.env`, terutama:
 - `GOOGLE_CLIENT_ID` dan `GOOGLE_CLIENT_SECRET` (dari Google Cloud Console)
 - Password database sesuai kebutuhan
 
+Generate `EMPLOYEE_APP_KEY` untuk Laravel (jalankan sekali):
+
+```bash
+docker run --rm php:8.3-cli php -r "echo 'base64:'.base64_encode(random_bytes(32)).PHP_EOL;"
+```
+
+Salin outputnya ke `.env` di bagian `EMPLOYEE_APP_KEY=`.
+
 **2. Build dan jalankan semua service**
 
 ```bash
@@ -93,7 +101,25 @@ Kalau mau jalan di background:
 docker-compose up --build -d
 ```
 
-**3. Cek semua service sudah jalan**
+**3. Jalankan seeder data awal (departemen & jabatan)**
+
+Setelah semua service running, jalankan seeder sekali:
+
+```bash
+docker exec employee-service php artisan db:seed --no-interaction
+```
+
+**4. Set akun admin**
+
+Akun yang didaftar via API defaultnya role `staff`. Untuk akses fitur admin, update role-nya:
+
+```bash
+docker exec db-auth mysql -u auth_user -pauth_secret auth_db -e "UPDATE users SET role='admin' WHERE email='emailkamu@example.com';"
+```
+
+Lalu login ulang supaya token yang baru sudah berisi role admin.
+
+**5. Cek semua service sudah jalan**
 
 ```bash
 docker-compose ps
@@ -101,7 +127,7 @@ docker-compose ps
 
 Semua service harusnya status `Up`. Database butuh beberapa detik sampai healthy sebelum service lain bisa connect.
 
-**4. Matikan semua**
+**6. Matikan semua**
 
 ```bash
 docker-compose down
@@ -123,7 +149,7 @@ Semua request masuk lewat API Gateway di `http://localhost:8000`.
 
 | Method | Endpoint | Keterangan | Auth? |
 |---|---|---|---|
-| POST | `/api/auth/daftar` | Registrasi akun baru | Tidak |
+| POST | `/api/auth/daftar` | Registrasi akun baru (password min. 1 huruf kapital) | Tidak |
 | POST | `/api/auth/masuk` | Login, dapat access & refresh token | Tidak |
 | POST | `/api/auth/perbarui-token` | Perbarui access token pakai refresh token | Tidak |
 | POST | `/api/auth/keluar` | Logout, token di-blacklist | Ya |
