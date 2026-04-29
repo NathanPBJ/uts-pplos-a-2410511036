@@ -79,6 +79,12 @@ services:
       - DB_DATABASE=${EMPLOYEE_DB_NAME:-employee_db}
       - DB_USERNAME=${EMPLOYEE_DB_USER:-employee_user}
       - DB_PASSWORD=${EMPLOYEE_DB_PASSWORD:-employee_secret}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:-changeme_access_secret_min32chars}
+      - JWT_ISSUER=${JWT_ISSUER:-yayasan-satwa-lestari}
+      - JWT_AUDIENCE=${JWT_AUDIENCE:-ys-lestari-clients}
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - ATTENDANCE_SERVICE_URL=http://attendance-service:3003
+      - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:-changeme_internal_secret}
     depends_on:
       db-employee:
         condition: service_healthy

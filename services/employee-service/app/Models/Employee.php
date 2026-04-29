@@ -24,11 +24,13 @@ class Employee extends Model
         'position_id',
         'status',
         'foto_url',
+        'poin_kehadiran',
     ];
 
     protected $casts = [
-        'tanggal_lahir'  => 'date',
-        'tanggal_masuk'  => 'date',
+        'tanggal_lahir'   => 'date',
+        'tanggal_masuk'   => 'date',
+        'poin_kehadiran'  => 'integer',
     ];
 
     protected $hidden = [];

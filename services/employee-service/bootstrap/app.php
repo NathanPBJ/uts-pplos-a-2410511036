@@ -16,8 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/health',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Daftarkan alias agar bisa dipakai di routes: middleware('gateway.auth')
         $middleware->alias([
+            'jwt.auth'     => \App\Http\Middleware\JwtMiddleware::class,
             'gateway.auth' => \App\Http\Middleware\VerifyGatewayToken::class,
         ]);
     })

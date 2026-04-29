@@ -20,4 +20,10 @@ return [
         'secret' => env('INTERNAL_SERVICE_SECRET', ''),
     ],
 
+    'jwt' => [
+        'access_secret' => env('JWT_ACCESS_SECRET', ''),
+        'issuer'        => env('JWT_ISSUER',  'yayasan-satwa-lestari'),
+        'audience'      => env('JWT_AUDIENCE', 'ys-lestari-clients'),
+    ],
+
 ];
