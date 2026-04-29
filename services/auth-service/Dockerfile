@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy manifest dulu agar layer cache tidak invalid saat kode berubah
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Copy source code
 COPY src/ ./src/

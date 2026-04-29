@@ -120,6 +120,12 @@ function proxy(target) {
   });
 }
 
+// ─── Health ───────────────────────────────────────────────────────────────────
+
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok', service: 'api-gateway' });
+});
+
 // ─── Routing ──────────────────────────────────────────────────────────────────
 
 // Auth Service
