@@ -2,10 +2,12 @@
 
 const dayjs                          = require('dayjs');
 const customParseFormat              = require('dayjs/plugin/customParseFormat');
+const utc                            = require('dayjs/plugin/utc');
 const { pool, getSettings }          = require('../utils/db');
 const { getPegawai, updatePoinPegawai } = require('../utils/employeeClient');
 
 dayjs.extend(customParseFormat);
+dayjs.extend(utc);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
