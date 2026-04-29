@@ -1,0 +1,656 @@
+{
+  "info": {
+    "name": "Sistem Kepegawaian & Absensi — Yayasan Satwa Lestari",
+    "_postman_id": "uts-pplos-2410511036",
+    "description": "Koleksi endpoint untuk UTS PPLOS — Nathan Abigail Rahman (2410511036)\nSemua request ke API Gateway di {{base_url}}",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",      "value": "http://localhost:8000", "type": "string" },
+    { "key": "access_token",  "value": "",                      "type": "string" },
+    { "key": "refresh_token", "value": "",                      "type": "string" },
+    { "key": "employee_id",   "value": "1",                     "type": "string" },
+    { "key": "dept_id",       "value": "1",                     "type": "string" },
+    { "key": "jabatan_id",    "value": "1",                     "type": "string" },
+    { "key": "absensi_id",    "value": "1",                     "type": "string" },
+    { "key": "cuti_id",       "value": "",                      "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Daftar (Register)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  const body = pm.response.json();",
+                "  if (body.data && body.data.token) {",
+                "    pm.collectionVariables.set('access_token', body.data.token.akses);",
+                "    pm.collectionVariables.set('refresh_token', body.data.token.perbarui);",
+                "  }",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/daftar", "host": ["{{base_url}}"], "path": ["api","auth","daftar"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Nathan Rahman\",\n  \"email\": \"nathan@example.com\",\n  \"password\": \"Rahasia123\",\n  \"password_confirmation\": \"Rahasia123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Masuk (Login)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  const body = pm.response.json();",
+                "  pm.collectionVariables.set('access_token', body.data.token.akses);",
+                "  pm.collectionVariables.set('refresh_token', body.data.token.perbarui);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/masuk", "host": ["{{base_url}}"], "path": ["api","auth","masuk"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nathan@example.com\",\n  \"password\": \"rahasia123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Perbarui Token",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "  const body = pm.response.json();",
+                "  pm.collectionVariables.set('access_token', body.data.token.akses);",
+                "  pm.collectionVariables.set('refresh_token', body.data.token.perbarui);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/perbarui-token", "host": ["{{base_url}}"], "path": ["api","auth","perbarui-token"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Keluar (Logout)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/keluar", "host": ["{{base_url}}"], "path": ["api","auth","keluar"] }
+          }
+        },
+        {
+          "name": "Profil Saya",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/profil", "host": ["{{base_url}}"], "path": ["api","auth","profil"] }
+          }
+        },
+        {
+          "name": "Google OAuth — Redirect",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/oauth/google", "host": ["{{base_url}}"], "path": ["api","auth","oauth","google"] },
+            "description": "Buka di browser, bukan Postman. Akan redirect ke halaman login Google."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Departemen",
+      "item": [
+        {
+          "name": "Daftar Departemen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/departemen", "host": ["{{base_url}}"], "path": ["api","departemen"] }
+          }
+        },
+        {
+          "name": "Detail Departemen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/departemen/{{dept_id}}", "host": ["{{base_url}}"], "path": ["api","departemen","{{dept_id}}"] }
+          }
+        },
+        {
+          "name": "Tambah Departemen",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/departemen", "host": ["{{base_url}}"], "path": ["api","departemen"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Departemen Konservasi\",\n  \"kode\": \"KON\",\n  \"deskripsi\": \"Mengelola program konservasi satwa\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Departemen",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/departemen/{{dept_id}}", "host": ["{{base_url}}"], "path": ["api","departemen","{{dept_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Departemen Konservasi & Riset\",\n  \"deskripsi\": \"Updated deskripsi\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Hapus Departemen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/departemen/{{dept_id}}", "host": ["{{base_url}}"], "path": ["api","departemen","{{dept_id}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Jabatan",
+      "item": [
+        {
+          "name": "Daftar Jabatan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jabatan",
+              "host": ["{{base_url}}"],
+              "path": ["api","jabatan"],
+              "query": [{ "key": "departemen", "value": "", "disabled": true }]
+            }
+          }
+        },
+        {
+          "name": "Daftar Jabatan (Filter Departemen)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/jabatan?departemen={{dept_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","jabatan"],
+              "query": [{ "key": "departemen", "value": "{{dept_id}}" }]
+            }
+          }
+        },
+        {
+          "name": "Detail Jabatan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/jabatan/{{jabatan_id}}", "host": ["{{base_url}}"], "path": ["api","jabatan","{{jabatan_id}}"] }
+          }
+        },
+        {
+          "name": "Tambah Jabatan",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/jabatan", "host": ["{{base_url}}"], "path": ["api","jabatan"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Dokter Hewan Senior\",\n  \"department_id\": 1,\n  \"level\": 3,\n  \"deskripsi\": \"Menangani perawatan medis satwa liar\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Jabatan",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/jabatan/{{jabatan_id}}", "host": ["{{base_url}}"], "path": ["api","jabatan","{{jabatan_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Dokter Hewan Senior I\",\n  \"level\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Hapus Jabatan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/jabatan/{{jabatan_id}}", "host": ["{{base_url}}"], "path": ["api","jabatan","{{jabatan_id}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Pegawai",
+      "item": [
+        {
+          "name": "Daftar Pegawai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pegawai?halaman=1&per_halaman=10",
+              "host": ["{{base_url}}"],
+              "path": ["api","pegawai"],
+              "query": [
+                { "key": "halaman",    "value": "1" },
+                { "key": "per_halaman","value": "10" },
+                { "key": "cari",       "value": "", "disabled": true },
+                { "key": "departemen", "value": "", "disabled": true },
+                { "key": "jabatan",    "value": "", "disabled": true },
+                { "key": "status",     "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Daftar Pegawai (Filter Aktif)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pegawai?status=aktif&per_halaman=20",
+              "host": ["{{base_url}}"],
+              "path": ["api","pegawai"],
+              "query": [
+                { "key": "status",     "value": "aktif" },
+                { "key": "per_halaman","value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Leaderboard Poin Kehadiran",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/pegawai/leaderboard", "host": ["{{base_url}}"], "path": ["api","pegawai","leaderboard"] }
+          }
+        },
+        {
+          "name": "Detail Pegawai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/pegawai/{{employee_id}}", "host": ["{{base_url}}"], "path": ["api","pegawai","{{employee_id}}"] }
+          }
+        },
+        {
+          "name": "Tambah Pegawai",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/pegawai", "host": ["{{base_url}}"], "path": ["api","pegawai"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Budi Santoso\",\n  \"email\": \"budi@ysl.org\",\n  \"department_id\": 1,\n  \"position_id\": 1,\n  \"tanggal_masuk\": \"2024-01-15\",\n  \"telepon\": \"08123456789\",\n  \"alamat\": \"Jl. Satwa No. 1, Jakarta\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Pegawai",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/pegawai/{{employee_id}}", "host": ["{{base_url}}"], "path": ["api","pegawai","{{employee_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telepon\": \"08198765432\",\n  \"alamat\": \"Jl. Baru No. 5, Depok\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Edit Pegawai — Pindah Jabatan",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/pegawai/{{employee_id}}", "host": ["{{base_url}}"], "path": ["api","pegawai","{{employee_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department_id\": 2,\n  \"position_id\": 3\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Ganti dept/jabatan → riwayat jabatan lama otomatis ditutup, yang baru dibuka."
+          }
+        },
+        {
+          "name": "Hapus Pegawai (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/pegawai/{{employee_id}}", "host": ["{{base_url}}"], "path": ["api","pegawai","{{employee_id}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Riwayat Jabatan",
+      "item": [
+        {
+          "name": "Riwayat Jabatan Pegawai",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/riwayat-jabatan/pegawai/{{employee_id}}", "host": ["{{base_url}}"], "path": ["api","riwayat-jabatan","pegawai","{{employee_id}}"] }
+          }
+        },
+        {
+          "name": "Tambah Riwayat Jabatan Manual",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/riwayat-jabatan", "host": ["{{base_url}}"], "path": ["api","riwayat-jabatan"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}},\n  \"department_id\": 1,\n  \"position_id\": 2,\n  \"tanggal_mulai\": \"2024-06-01\",\n  \"keterangan\": \"Promosi jabatan\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Tutup Riwayat Jabatan (Selesai)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/riwayat-jabatan/1", "host": ["{{base_url}}"], "path": ["api","riwayat-jabatan","1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tanggal_selesai\": \"2024-12-31\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Hapus Riwayat Jabatan",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/riwayat-jabatan/1", "host": ["{{base_url}}"], "path": ["api","riwayat-jabatan","1"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Absensi",
+      "item": [
+        {
+          "name": "Clock-In (Absensi Masuk)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/absensi/masuk", "host": ["{{base_url}}"], "path": ["api","absensi","masuk"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Clock-Out (Absensi Pulang)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/absensi/pulang", "host": ["{{base_url}}"], "path": ["api","absensi","pulang"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Tandai Alpha (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/absensi/alpha", "host": ["{{base_url}}"], "path": ["api","absensi","alpha"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}},\n  \"tanggal\": \"2024-07-15\",\n  \"keterangan\": \"Tidak hadir tanpa keterangan\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Riwayat Absensi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/absensi?employee_id={{employee_id}}&halaman=1&per_halaman=20",
+              "host": ["{{base_url}}"],
+              "path": ["api","absensi"],
+              "query": [
+                { "key": "employee_id",    "value": "{{employee_id}}" },
+                { "key": "halaman",        "value": "1" },
+                { "key": "per_halaman",    "value": "20" },
+                { "key": "tanggal_mulai",  "value": "", "disabled": true },
+                { "key": "tanggal_selesai","value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Riwayat Absensi (Filter Tanggal)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/absensi?employee_id={{employee_id}}&tanggal_mulai=2024-07-01&tanggal_selesai=2024-07-31",
+              "host": ["{{base_url}}"],
+              "path": ["api","absensi"],
+              "query": [
+                { "key": "employee_id",    "value": "{{employee_id}}" },
+                { "key": "tanggal_mulai",  "value": "2024-07-01" },
+                { "key": "tanggal_selesai","value": "2024-07-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detail Absensi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/absensi/{{absensi_id}}", "host": ["{{base_url}}"], "path": ["api","absensi","{{absensi_id}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Cuti",
+      "item": [
+        {
+          "name": "Ajukan Cuti",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "  const body = pm.response.json();",
+                "  if (body.data && body.data.id) {",
+                "    pm.collectionVariables.set('cuti_id', body.data.id);",
+                "  }",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/cuti", "host": ["{{base_url}}"], "path": ["api","cuti"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{employee_id}},\n  \"tanggal_mulai\": \"2024-08-01\",\n  \"tanggal_selesai\": \"2024-08-03\",\n  \"alasan\": \"Urusan keluarga\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Daftar Pengajuan Cuti",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/cuti?employee_id={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","cuti"],
+              "query": [
+                { "key": "employee_id", "value": "{{employee_id}}" },
+                { "key": "status",      "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Daftar Cuti (Filter Pending)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/cuti?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api","cuti"],
+              "query": [{ "key": "status", "value": "pending" }]
+            },
+            "description": "Hanya admin yang bisa lihat semua tanpa filter employee_id."
+          }
+        },
+        {
+          "name": "Detail Cuti",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/cuti/{{cuti_id}}", "host": ["{{base_url}}"], "path": ["api","cuti","{{cuti_id}}"] }
+          }
+        },
+        {
+          "name": "Setujui Cuti (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/cuti/{{cuti_id}}/setujui", "host": ["{{base_url}}"], "path": ["api","cuti","{{cuti_id}}","setujui"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"catatan_admin\": \"Disetujui, silakan nikmati cuti Anda.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Tolak Cuti (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/cuti/{{cuti_id}}/tolak", "host": ["{{base_url}}"], "path": ["api","cuti","{{cuti_id}}","tolak"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"catatan_admin\": \"Ditolak karena kekurangan pegawai di periode tersebut.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Batalkan Cuti",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/cuti/{{cuti_id}}", "host": ["{{base_url}}"], "path": ["api","cuti","{{cuti_id}}"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Laporan",
+      "item": [
+        {
+          "name": "Rekap Bulanan (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/laporan/bulanan?bulan=7&tahun=2024",
+              "host": ["{{base_url}}"],
+              "path": ["api","laporan","bulanan"],
+              "query": [
+                { "key": "bulan",       "value": "7" },
+                { "key": "tahun",       "value": "2024" },
+                { "key": "employee_id", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rekap Bulanan (Per Pegawai)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/laporan/bulanan?bulan=7&tahun=2024&employee_id={{employee_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api","laporan","bulanan"],
+              "query": [
+                { "key": "bulan",       "value": "7" },
+                { "key": "tahun",       "value": "2024" },
+                { "key": "employee_id", "value": "{{employee_id}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Rekap ke .docx",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/laporan/bulanan/export?bulan=7&tahun=2024",
+              "host": ["{{base_url}}"],
+              "path": ["api","laporan","bulanan","export"],
+              "query": [
+                { "key": "bulan", "value": "7" },
+                { "key": "tahun", "value": "2024" }
+              ]
+            },
+            "description": "Response berupa file .docx — klik 'Send and Download' di Postman supaya file terunduh."
+          }
+        }
+      ]
+    }
+
+  ]
+}
