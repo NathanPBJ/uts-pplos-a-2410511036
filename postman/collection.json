@@ -72,7 +72,7 @@
             "url": { "raw": "{{base_url}}/api/auth/masuk", "host": ["{{base_url}}"], "path": ["api","auth","masuk"] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nathan@example.com\",\n  \"password\": \"rahasia123\"\n}"
+              "raw": "{\n  \"email\": \"nathan@example.com\",\n  \"password\": \"Rahasia123\"\n}"
             }
           }
         },

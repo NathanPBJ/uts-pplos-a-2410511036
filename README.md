@@ -1,13 +1,19 @@
 # Sistem Kepegawaian & Absensi — Yayasan Satwa Lestari
 
-> Tugas UTS —> Tugas UTS — Mata Kuliah Pembangunan Perangkat Lunak Berorientasi Service (PPLOS)
+> Tugas UTS — Mata Kuliah Pembangunan Perangkat Lunak Berorientasi Service (PPLOS)
 > Program Studi Informatika, UPN Veteran Jakarta
 
 ---
 
-**Nama:** Nathan Abigail Rahman  
-**NIM:** 2410511036  
+**Nama:** Nathan Abigail Rahman
+**NIM:** 2410511036
 **Kelas:** A
+
+---
+
+## Demo Video
+
+[![Demo Video](https://img.youtube.com/vi/KOFXuiQl0m8/0.jpg)](https://youtu.be/KOFXuiQl0m8)
 
 ---
 
@@ -149,7 +155,7 @@ Semua request masuk lewat API Gateway di `http://localhost:8000`.
 
 | Method | Endpoint | Keterangan | Auth? |
 |---|---|---|---|
-| POST | `/api/auth/daftar` | Registrasi akun baru (password min. 1 huruf kapital) | Tidak |
+| POST | `/api/auth/daftar` | Registrasi akun baru (password min. 1 huruf kapital + 1 angka) | Tidak |
 | POST | `/api/auth/masuk` | Login, dapat access & refresh token | Tidak |
 | POST | `/api/auth/perbarui-token` | Perbarui access token pakai refresh token | Tidak |
 | POST | `/api/auth/keluar` | Logout, token di-blacklist | Ya |
@@ -179,6 +185,8 @@ Semua request masuk lewat API Gateway di `http://localhost:8000`.
 
 Query params untuk `/api/pegawai`: `?cari=`, `?departemen=`, `?jabatan=`, `?status=`, `?halaman=`, `?per_halaman=`
 
+> **Catatan:** field `jenis_kelamin` hanya menerima nilai `L` atau `P` (bukan "laki-laki"/"perempuan").
+
 ### Absensi (`/api/absensi`, `/api/cuti`, `/api/laporan`)
 
 | Method | Endpoint | Keterangan | Role |
@@ -200,22 +208,22 @@ Query params untuk `/api/pegawai`: `?cari=`, `?departemen=`, `?jabatan=`, `?stat
 
 ## Fitur Tambahan / Catatan
 
-**Sistem Poin Kehadiran**  
+**Sistem Poin Kehadiran**
 Setiap pegawai punya poin kehadiran yang terakumulasi. Hadir tepat waktu +10 poin, telat -5 poin, alpha -20 poin. Poin ini disimpan di tabel pegawai dan bisa dilihat lewat endpoint leaderboard. Tujuannya biar ada semacam gamifikasi sederhana untuk mendorong kehadiran.
 
-**Export Laporan ke .docx**  
+**Export Laporan ke .docx**
 Rekap absensi bulanan bisa diexport jadi file Word (.docx) yang siap cetak, lengkap dengan tabel berformat dan header berwarna hijau (#2D6A4F). Dibuat pakai library `docx` untuk Node.js.
 
-**NIP Auto-generate**  
+**NIP Auto-generate**
 Waktu admin tambah pegawai baru, NIP otomatis di-generate dengan format `YSL{tahun}{kode_dept}{urutan}`, jadi admin ga perlu input manual.
 
-**Riwayat Jabatan**  
+**Riwayat Jabatan**
 Setiap kali jabatan atau departemen pegawai diubah, sistem otomatis menutup riwayat jabatan lama dan membuka yang baru. Jadi bisa dilacak pegawai pernah di posisi mana aja.
 
-**Google OAuth**  
+**Google OAuth**
 Selain login biasa (email + password), bisa login pakai akun Google. Kalau email Google sudah terdaftar di sistem, otomatis di-link ke akun yang ada.
 
-**Rate Limiting**  
+**Rate Limiting**
 API Gateway membatasi 60 request per menit per IP untuk mencegah abuse.
 
 ---
@@ -230,6 +238,11 @@ uts-pplos-a-2410511036/
 │   ├── index.js
 │   ├── Dockerfile
 │   └── package.json
+├── docs/
+│   ├── laporan-uts.pdf       ← Laporan UTS
+│   └── arsitektur.png        ← Diagram arsitektur sistem
+├── postman/
+│   └── collection.json       ← Koleksi endpoint Postman
 └── services/
     ├── auth-service/         ← Autentikasi (Node.js)
     ├── employee-service/     ← Data Kepegawaian (Laravel)
@@ -246,6 +259,7 @@ Beberapa hal yang perlu diketahui kalau mau lanjutkan project ini:
 - Token JWT di-share secret-nya antar service, bukan pakai public/private key. Ini trade-off antara simplisitas dan security — untuk production harusnya pakai RS256
 - Employee service (Laravel) tidak pakai Laravel Sanctum atau Passport, tapi verifikasi JWT sendiri pakai `firebase/php-jwt` karena token di-issue dari service lain
 - Database setiap service benar-benar terpisah, ga ada join cross-database. Data pegawai (nama, NIP) di-denormalisasi ke tabel attendances supaya laporan tidak bergantung ke service lain
+- Field `jenis_kelamin` di endpoint pegawai hanya menerima `L` atau `P`
 
 ---
 
